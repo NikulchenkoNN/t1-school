@@ -1,0 +1,13 @@
+package ru.home_work.t1_school;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class T1SchoolApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(T1SchoolApplication.class, args);
+	}
+
+}
