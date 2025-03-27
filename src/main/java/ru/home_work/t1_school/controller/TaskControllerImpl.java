@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.home_work.t1_school.aspect.annotations.LogExecution;
 import ru.home_work.t1_school.model.Task;
 import ru.home_work.t1_school.service.TaskService;
 
@@ -15,36 +16,36 @@ public class TaskControllerImpl {
 
     private final TaskService service;
 
+    @LogExecution
     @PostMapping(value = "/tasks", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task Task = service.create(task);
-        return ResponseEntity.ok(task);
+        return ResponseEntity.ok(service.create(task));
     }
 
-    @GetMapping(value = "/tasks/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogExecution
+    @GetMapping(value = "/tasks/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Task> getTask(@PathVariable Long id) {
-        Task task = service.getTask(id);
-        return ResponseEntity.ok(task);
+        return ResponseEntity.ok(service.getTask(id));
     }
 
-
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Task> updateTask(@PathVariable Long id,
-                                           @RequestBody Task task) {
-        Task updated = service.update(id, task);
-        return ResponseEntity.ok(updated);
+    @LogExecution
+    @PutMapping(value = "/tasks/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateTask(@PathVariable Long id,
+                                             @RequestBody Task task) {
+        service.update(id, task);
+        return ResponseEntity.ok("Задание " + id + " обновленно");
     }
 
-
-    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Task> deleteTask(@RequestParam Long id) {
-        Task deleted = service.delete(id);
-        return ResponseEntity.ok(deleted);
+    @LogExecution
+    @DeleteMapping(value = "/tasks/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.ok("Задание " + id + " удалено");
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogExecution
+    @GetMapping(value = "/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<Task>> listTasks() {
-        Collection<Task> list = service.list();
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(service.list());
     }
 }

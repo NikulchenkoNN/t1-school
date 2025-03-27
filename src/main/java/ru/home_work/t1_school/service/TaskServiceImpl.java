@@ -2,7 +2,8 @@ package ru.home_work.t1_school.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import ru.home_work.t1_school.aspect.annotations.LogExecutionTime;
 import ru.home_work.t1_school.exception.TaskNotFoundException;
 import ru.home_work.t1_school.model.Task;
 import ru.home_work.t1_school.repository.TaskRepository;
@@ -11,39 +12,52 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Slf4j
-@Component
+@Service
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository repository;
 
+    @LogExecutionTime
     @Override
     public Task create(Task task) {
         return repository.save(task);
     }
 
+    @LogExecutionTime
     @Override
     public Task getTask(Long id) {
         Optional<Task> byId = repository.findById(id);
         if (byId.isPresent()) {
             return byId.get();
         } else {
-            String message = String.format("Задание с иденотификатором %s не найдено", id);
+            String message = String.format("Задание с идентификатором %s не найдено", id);
             throw new TaskNotFoundException(message);
         }
     }
 
+    @LogExecutionTime
     @Override
-    public Task update(Long id, Task task) {
-        return repository.update(id, task);
+    public void update(Long id, Task task) {
+        Optional<Task> byId = repository.findById(id);
+        if (byId.isPresent()) {
+            task.setId(id);
+            repository.save(task);
+        } else {
+            String message = String.format("Задание с идентификатором %s не найдено", id);
+            throw new TaskNotFoundException(message);
+        }
+
     }
 
+    @LogExecutionTime
     @Override
-    public Task delete(Long id) {
-        return repository.deleteByTaskId(id);
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 
+    @LogExecutionTime
     @Override
     public Collection<Task> list() {
-        return null;
+        return repository.findAll();
     }
 }

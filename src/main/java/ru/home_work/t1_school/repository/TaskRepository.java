@@ -11,11 +11,7 @@ import ru.home_work.t1_school.model.Task;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Modifying
-    @Query("UPDATE Task t SET t = :task WHERE t.id = :id")
-    Task update(@Param("id") Long id,
-                @Param("task") Task task);
-
-    @Modifying
-    @Query("DELETE FROM Task t WHERE t.id = :id")
-    Task deleteByTaskId(@Param("id") Long id);
+    @Query("update Task t set t = :task where t.id = :id")
+    void updateTask(@Param("id") Long id,
+                    @Param("task") Task task);
 }
