@@ -3,6 +3,7 @@ package ru.home_work.t1_school.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.home_work.t1_school.aspect.annotations.LogException;
 import ru.home_work.t1_school.aspect.annotations.LogExecutionTime;
 import ru.home_work.t1_school.exception.TaskNotFoundException;
 import ru.home_work.t1_school.model.Task;
@@ -15,15 +16,18 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
+
     private final TaskRepository repository;
 
     @LogExecutionTime
+    @LogException
     @Override
     public Task create(Task task) {
         return repository.save(task);
     }
 
     @LogExecutionTime
+    @LogException
     @Override
     public Task getTask(Long id) {
         Optional<Task> byId = repository.findById(id);
@@ -36,6 +40,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @LogExecutionTime
+    @LogException
     @Override
     public void update(Long id, Task task) {
         Optional<Task> byId = repository.findById(id);
@@ -50,12 +55,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @LogExecutionTime
+    @LogException
     @Override
     public void delete(Long id) {
         repository.deleteById(id);
     }
 
     @LogExecutionTime
+    @LogException
     @Override
     public Collection<Task> list() {
         return repository.findAll();
