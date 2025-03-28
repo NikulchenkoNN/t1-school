@@ -3,6 +3,7 @@ package ru.home_work.t1_school.aspect;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import ru.home_work.t1_school.aspect.annotations.LogException;
 import ru.home_work.t1_school.aspect.annotations.LogMethodCallWithParams;
 import ru.home_work.t1_school.aspect.annotations.LogExecutionTime;
+import ru.home_work.t1_school.aspect.annotations.LogReturning;
 
 import java.util.Arrays;
 
@@ -53,5 +55,17 @@ public class LogAspect {
         log.info(message);
     }
 
+    @AfterReturning(
+            pointcut = "execution(* *(..))) & @annotation(annotation)",
+            returning = "val"
+    )
+    void logReturning(JoinPoint joinPoint, LogReturning annotation, Object val) throws Throwable {
+        String message = String.format("Метод %s класса %s вернул значение %s",
+                joinPoint.getSignature().getName(),
+                joinPoint.getSignature().getDeclaringType().getName(),
+                val
+        );
+        log.info(message);
+    }
 
 }

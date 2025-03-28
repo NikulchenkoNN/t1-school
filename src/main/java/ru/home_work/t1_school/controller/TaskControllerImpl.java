@@ -1,5 +1,8 @@
 package ru.home_work.t1_school.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +27,13 @@ public class TaskControllerImpl {
 
     @LogMethodCallWithParams
     @GetMapping(value = "/tasks/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Task> getTask(@PathVariable Long id) {
+    public ResponseEntity<Task> getTask(@PathVariable("id") Long id) {
         return ResponseEntity.ok(service.getTask(id));
     }
 
     @LogMethodCallWithParams
     @PutMapping(value = "/tasks/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateTask(@PathVariable Long id,
+    public ResponseEntity<String> updateTask(@PathVariable("id") Long id,
                                              @RequestBody Task task) {
         service.update(id, task);
         return ResponseEntity.ok("Задание " + id + " обновленно");
@@ -38,7 +41,7 @@ public class TaskControllerImpl {
 
     @LogMethodCallWithParams
     @DeleteMapping(value = "/tasks/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<String> deleteTask(@PathVariable("id")  Long id) {
         service.delete(id);
         return ResponseEntity.ok("Задание " + id + " удалено");
     }
