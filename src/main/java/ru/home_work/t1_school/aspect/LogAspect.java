@@ -21,8 +21,8 @@ import java.util.Arrays;
 @Slf4j
 public class LogAspect {
 
-    @Before("@annotation(annotation)")
-    void logCalls(JoinPoint joinPoint, LogMethodCallWithParams annotation) {
+    @Before("@annotation(logMethodCallWithParams)")
+    void logCalls(JoinPoint joinPoint, LogMethodCallWithParams logMethodCallWithParams) {
         String message = String.format("Метод %s класса %s вызван с параметрами %s",
                 joinPoint.getSignature().getName(),
                 joinPoint.getSignature().getDeclaringType().getName(),
@@ -30,8 +30,8 @@ public class LogAspect {
         log.info(message);
     }
 
-    @Around("@annotation(annotation)")
-    public Object logTime(ProceedingJoinPoint joinPoint, LogExecutionTime annotation) throws Throwable {
+    @Around("@annotation(logExecutionTime)")
+    public Object logTime(ProceedingJoinPoint joinPoint, LogExecutionTime logExecutionTime) throws Throwable {
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long stop = System.currentTimeMillis();
@@ -44,10 +44,10 @@ public class LogAspect {
     }
 
     @AfterThrowing(
-            pointcut = "@annotation(annotation)",
+            pointcut = "@annotation(logException)",
             throwing = "exception"
     )
-    void logException(JoinPoint joinPoint, LogException annotation, Throwable exception) throws Throwable {
+    void logException(JoinPoint joinPoint, LogException logException, Throwable exception) {
         String message = String.format("Метод %s класса %s выбросил исключение %s",
                 joinPoint.getSignature().getName(),
                 joinPoint.getSignature().getDeclaringType().getName(),
@@ -56,10 +56,10 @@ public class LogAspect {
     }
 
     @AfterReturning(
-            pointcut = "execution(* *(..))) & @annotation(annotation)",
+            pointcut = "@annotation(logReturning)",
             returning = "val"
     )
-    void logReturning(JoinPoint joinPoint, LogReturning annotation, Object val) throws Throwable {
+    void logReturning(JoinPoint joinPoint, LogReturning logReturning, Object val) {
         String message = String.format("Метод %s класса %s вернул значение %s",
                 joinPoint.getSignature().getName(),
                 joinPoint.getSignature().getDeclaringType().getName(),
