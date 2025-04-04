@@ -5,8 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = {"ru.home_work.t1_school"})
-@EnableJpaRepositories(basePackages = "ru.home_work.t1_school.repository")
+@SpringBootApplication
 public class T1SchoolApplication {
 
 	public static void main(String[] args) {
