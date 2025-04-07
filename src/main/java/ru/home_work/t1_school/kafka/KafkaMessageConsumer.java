@@ -6,12 +6,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import ru.home_work.t1_school.converter.MessageConverter;
-import ru.home_work.t1_school.model.Message;
 import ru.home_work.t1_school.model.MessageDto;
-import ru.home_work.t1_school.service.NotificationService;
+import ru.home_work.t1_school.service.MailNotificator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -19,8 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KafkaMessageConsumer {
 
-    private final NotificationService notificator;
-    private final MessageConverter messageConverter;
+    private final MailNotificator notificator;
 
     @KafkaListener(id = "${kafka.consumer.groupId}",
             topics = "${kafka.clientTopic}",
@@ -29,19 +25,12 @@ public class KafkaMessageConsumer {
     public void consume(@Payload List<MessageDto> messages,
                         Acknowledgment ack) {
         try {
-            log.info("Consuming messages: {}", messages);
-            List<Message> messageList = new ArrayList<>();
             for (MessageDto messageDto : messages) {
-                Message message = messageConverter.toMessage(messageDto);
-                messageList.add(message);
+                System.out.println(messageDto);
             }
-            log.info("Consumed messages: {}", messageList);
-            for (Message message : messageList) {
-                notificator.sendNotification(message.getId());
-            }
-            log.info("Message sent: {}", messageList.size());
+            notificator.sendNotification();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            e.printStackTrace();
         } finally {
             ack.acknowledge();
         }
