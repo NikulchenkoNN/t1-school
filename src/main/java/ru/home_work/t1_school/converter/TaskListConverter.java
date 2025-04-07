@@ -6,8 +6,7 @@ import ru.home_work.t1_school.model.TaskDto;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = TaskConverter.class)
+@Mapper(componentModel = "spring")
 public interface TaskListConverter {
     List<TaskDto> converToDtoList(List<Task> taskList);
-    List<Task> converToTaskList(List<TaskDto> taskDtoList);
 }

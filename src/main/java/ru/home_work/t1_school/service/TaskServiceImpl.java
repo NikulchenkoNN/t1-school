@@ -6,12 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.home_work.t1_school.aspect.annotations.LogException;
 import ru.home_work.t1_school.aspect.annotations.LogExecutionTime;
 import ru.home_work.t1_school.aspect.annotations.LogReturning;
-import ru.home_work.t1_school.converter.TaskConverter;
 import ru.home_work.t1_school.exception.TaskNotFoundException;
-import ru.home_work.t1_school.kafka.KafkaMessageProducer;
-import ru.home_work.t1_school.model.MessageDto;
 import ru.home_work.t1_school.model.Task;
-import ru.home_work.t1_school.model.TaskDto;
 import ru.home_work.t1_school.repository.TaskRepository;
 
 import java.util.List;
@@ -23,17 +19,13 @@ import java.util.Optional;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository repository;
-    private final KafkaMessageProducer producer;
-    private final TaskConverter converter;
     private final String TASK_NOT_FOUND_MESSAGE = "Задание с идентификатором %s не найдено";
-    private final String topic = "mail_notification";
 
     @LogExecutionTime
     @LogException
     @LogReturning
     @Override
     public Task create(Task task) {
-        task.setState("CREATED");
         return repository.save(task);
     }
 
@@ -55,16 +47,9 @@ public class TaskServiceImpl implements TaskService {
     @LogException
     @Override
     public void update(Long id, Task task) {
-        Task saved = repository.findById(id)
+        repository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(String.format(TASK_NOT_FOUND_MESSAGE, id)));
-
-        saved.setState("UPDATED");
-        saved.setDescription(task.getDescription());
-        saved.setTitle(task.getTitle());
-        saved.setUserId(task.getUserId());
-
-        repository.save(saved);
-        producer.sendTo(topic, new MessageDto(id, saved.getState()));
+        repository.save(task);
     }
 
     @LogExecutionTime
