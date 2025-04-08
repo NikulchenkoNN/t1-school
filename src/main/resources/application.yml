@@ -23,3 +23,9 @@ kafka:
     groupId: homework
   bootstrap:
     servers: localhost:9092
+
+school:
+  mail:
+    from: mail@yandex.ru
+    password: password
+    to: mail@mail.ru
