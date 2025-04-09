@@ -1,7 +1,9 @@
 package ru.home_work.t1_school.service;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.home_work.t1_school.aspect.annotations.LogException;
 import ru.home_work.t1_school.aspect.annotations.LogExecutionTime;
@@ -17,13 +19,14 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository repository;
     private final KafkaMessageProducer producer;
     private final String TASK_NOT_FOUND_MESSAGE = "Задание с идентификатором %s не найдено";
-    private final String topic = "mail_notification";
+    @Value("${kafka.clientTopic}")
+    private String topic;
 
     @LogExecutionTime
     @LogException
@@ -51,17 +54,19 @@ public class TaskServiceImpl implements TaskService {
     @LogExecutionTime
     @LogException
     @Override
-    public void update(Long id, Task task) {
-        Task saved = repository.findById(id)
+    public void update(Long id, Task inputTask) {
+        Task taskFromDB = repository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(String.format(TASK_NOT_FOUND_MESSAGE, id)));
 
-        saved.setState("UPDATED");
-        saved.setDescription(task.getDescription());
-        saved.setTitle(task.getTitle());
-        saved.setUserId(task.getUserId());
+        taskFromDB.setState("UPDATED");
+        taskFromDB.setDescription(inputTask.getDescription());
+        taskFromDB.setTitle(inputTask.getTitle());
+        taskFromDB.setUserId(inputTask.getUserId());
 
-        repository.save(saved);
-        producer.sendTo(topic, new MessageDto(id, saved.getState()));
+        Task saved = repository.save(taskFromDB);
+        if (saved.getState().equals("UPDATED")) {
+            producer.sendTo(topic, new MessageDto(id, saved.getState()));
+        }
     }
 
     @LogExecutionTime

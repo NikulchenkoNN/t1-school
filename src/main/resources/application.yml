@@ -26,6 +26,11 @@ kafka:
 
 school:
   mail:
-    from: mail@yandex.ru
-    password: password
-    to: mail@mail.ru
+    from: nick.nikulchenko@yandex.ru
+    password: zshjrqmmgzdrmgus
+    to: maloy9290@mail.ru
+    smtp:
+      host: smtp.yandex.ru
+      port: 465
+      auth_enabled: true
+      ssl_enabled: true

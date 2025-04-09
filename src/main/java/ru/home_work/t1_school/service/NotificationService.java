@@ -15,22 +15,36 @@ import java.util.Properties;
 @Service
 public class NotificationService {
 
-    @Value("${school.mail.from}")
-    private String from;
-    @Value("${school.mail.to}")
-    private String to;
     private final String subject = "Task Updated";
     private final String text = "Task id %s updated";
+
+    @Value("${school.mail.from}")
+    private String from;
+
+    @Value("${school.mail.to}")
+    private String to;
+
     @Value("${school.mail.password}")
     private String password;
 
+    @Value("${school.mail.smtp.host}")
+    private String smtpHost;
+
+    @Value("${school.mail.smtp.port}")
+    private int smtpPort;
+
+    @Value("${school.mail.smtp.auth_enabled}")
+    private String authEnabled;
+
+    @Value("${school.mail.smtp.ssl_enabled}")
+    private String sslEnabled;
 
     public void sendNotification(Long id) throws MailException {
         Properties properties = new Properties();
-        properties.put("mail.smtp.host", "smtp.yandex.ru"); // smtp сервер Google
-        properties.put("mail.smtp.port", "465");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.host", smtpHost); // smtp сервер Google
+        properties.put("mail.smtp.port", smtpPort);
+        properties.put("mail.smtp.auth", authEnabled);
+        properties.put("mail.smtp.ssl.enable", sslEnabled);
 
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
