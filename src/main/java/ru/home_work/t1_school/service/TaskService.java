@@ -2,7 +2,6 @@ package ru.home_work.t1_school.service;
 
 import ru.home_work.t1_school.model.Task;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface TaskService {

@@ -1,12 +1,16 @@
 package ru.home_work.t1_school.service;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.home_work.t1_school.aspect.annotations.LogException;
 import ru.home_work.t1_school.aspect.annotations.LogExecutionTime;
 import ru.home_work.t1_school.aspect.annotations.LogReturning;
 import ru.home_work.t1_school.exception.TaskNotFoundException;
+import ru.home_work.t1_school.kafka.KafkaMessageProducer;
+import ru.home_work.t1_school.model.MessageDto;
 import ru.home_work.t1_school.model.Task;
 import ru.home_work.t1_school.repository.TaskRepository;
 
@@ -15,17 +19,21 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository repository;
+    private final KafkaMessageProducer producer;
     private final String TASK_NOT_FOUND_MESSAGE = "Задание с идентификатором %s не найдено";
+    @Value("${kafka.clientTopic}")
+    private String topic;
 
     @LogExecutionTime
     @LogException
     @LogReturning
     @Override
     public Task create(Task task) {
+        task.setState("CREATED");
         return repository.save(task);
     }
 
@@ -46,10 +54,19 @@ public class TaskServiceImpl implements TaskService {
     @LogExecutionTime
     @LogException
     @Override
-    public void update(Long id, Task task) {
-        repository.findById(id)
+    public void update(Long id, Task inputTask) {
+        Task taskFromDB = repository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(String.format(TASK_NOT_FOUND_MESSAGE, id)));
-        repository.save(task);
+
+        taskFromDB.setState("UPDATED");
+        taskFromDB.setDescription(inputTask.getDescription());
+        taskFromDB.setTitle(inputTask.getTitle());
+        taskFromDB.setUserId(inputTask.getUserId());
+
+        Task saved = repository.save(taskFromDB);
+        if (saved.getState().equals("UPDATED")) {
+            producer.sendTo(topic, new MessageDto(id, saved.getState()));
+        }
     }
 
     @LogExecutionTime
