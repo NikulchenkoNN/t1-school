@@ -2,8 +2,8 @@ package ru.home_work.t1_school.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import ru.home_work.t1_school.exception.TaskNotFoundException;
+import ru.home_work.t1_school.kafka.KafkaMessageProducer;
 import ru.home_work.t1_school.model.Task;
 import ru.home_work.t1_school.repository.TaskRepository;
 
@@ -20,11 +20,12 @@ import static org.mockito.Mockito.when;
 class TaskServiceImplTest {
 
     private final TaskRepository taskRepository = mock(TaskRepository.class);
-    TaskService taskService = new TaskServiceImpl(taskRepository);
+    private final KafkaMessageProducer producer = mock(KafkaMessageProducer.class);
+    TaskService taskService = new TaskServiceImpl(taskRepository, producer);
 
     @BeforeEach
     void setUp() {
-        taskService = new TaskServiceImpl(taskRepository);
+        taskService = new TaskServiceImpl(taskRepository,producer);
     }
 
     @Test

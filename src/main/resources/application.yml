@@ -34,3 +34,7 @@ school:
       port: 465
       auth_enabled: true
       ssl_enabled: true
+
+logger:
+  enabled: true
+  level: error
