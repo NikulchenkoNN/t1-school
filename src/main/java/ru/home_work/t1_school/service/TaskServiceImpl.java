@@ -1,18 +1,17 @@
 package ru.home_work.t1_school.service;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.home_work.t1_school.aspect.annotations.LogException;
-import ru.home_work.t1_school.aspect.annotations.LogExecutionTime;
-import ru.home_work.t1_school.aspect.annotations.LogReturning;
 import ru.home_work.t1_school.exception.TaskNotFoundException;
 import ru.home_work.t1_school.kafka.KafkaMessageProducer;
 import ru.home_work.t1_school.model.MessageDto;
 import ru.home_work.t1_school.model.Task;
 import ru.home_work.t1_school.repository.TaskRepository;
+import ru.home_work.t1_starter.aspect.annotations.LogException;
+import ru.home_work.t1_starter.aspect.annotations.LogExecutionTime;
+import ru.home_work.t1_starter.aspect.annotations.LogReturning;
 
 import java.util.List;
 import java.util.Optional;
