@@ -37,4 +37,4 @@ school:
 
 logger:
   enabled: true
-  level: error
+  level: info
