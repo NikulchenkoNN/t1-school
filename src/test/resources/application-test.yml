@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:13:///test_db
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: true
+
+kafka:
+  producerEnabled: true
+  clientTopic: mail_notification
+  maxPartitionBytes: 300000
+  maxPollRecords: 1
+  maxPollInterval: 30000
+  session:
+    timeout: 15000
+  consumer:
+    groupId: homework
+  bootstrap:
+    servers: localhost:9092
+
+school:
+  mail:
+    from: mail@yandex.ru
+    password: password
+    to: mail@mail.ru
+    smtp:
+      host: smtp.yandex.ru
+      port: 465
+      auth_enabled: true
+      ssl_enabled: true
+
+logger:
+  enabled: true
+  level: info

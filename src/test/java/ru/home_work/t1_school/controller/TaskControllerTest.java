@@ -10,7 +10,6 @@ import ru.home_work.t1_school.model.TaskDto;
 import ru.home_work.t1_school.service.TaskService;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
