@@ -18,6 +18,7 @@ public class TaskController {
     private final TaskService service;
     private final TaskConverter taskConverter;
     private final TaskListConverter listConverter;
+
     @LogMethodCallWithParams
     @PostMapping(value = "/tasks")
     public TaskDto createTask(@RequestBody TaskDto taskDto) {

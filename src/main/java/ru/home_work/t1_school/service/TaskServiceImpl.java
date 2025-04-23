@@ -14,7 +14,6 @@ import ru.home_work.t1_starter.aspect.annotations.LogExecutionTime;
 import ru.home_work.t1_starter.aspect.annotations.LogReturning;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -41,13 +40,8 @@ public class TaskServiceImpl implements TaskService {
     @LogReturning
     @Override
     public Task getTask(Long id) {
-        Optional<Task> byId = repository.findById(id);
-        if (byId.isPresent()) {
-            return byId.get();
-        } else {
-            String message = String.format(TASK_NOT_FOUND_MESSAGE, id);
-            throw new TaskNotFoundException(message);
-        }
+        return repository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(String.format(TASK_NOT_FOUND_MESSAGE, id)));
     }
 
     @LogExecutionTime

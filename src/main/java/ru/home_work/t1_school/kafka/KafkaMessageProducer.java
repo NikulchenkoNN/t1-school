@@ -18,6 +18,7 @@ public class KafkaMessageProducer {
             kafkaTemplate.flush();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw e;
         }
     }
 

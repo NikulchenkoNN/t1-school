@@ -1,6 +1,7 @@
 package ru.home_work.t1_school.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.home_work.t1_school.exception.TaskNotFoundException;
 import ru.home_work.t1_school.kafka.KafkaMessageProducer;
@@ -9,23 +10,19 @@ import ru.home_work.t1_school.repository.TaskRepository;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TaskServiceImplTest {
 
     private final TaskRepository taskRepository = mock(TaskRepository.class);
-    private final KafkaMessageProducer producer = mock(KafkaMessageProducer.class);
-    TaskService taskService = new TaskServiceImpl(taskRepository, producer);
+    private final KafkaMessageProducer kafkaProducer = mock(KafkaMessageProducer.class);
+    TaskService taskService;
 
     @BeforeEach
     void setUp() {
-        taskService = new TaskServiceImpl(taskRepository,producer);
+        taskService = new TaskServiceImpl(taskRepository, kafkaProducer);
     }
 
     @Test
@@ -54,10 +51,27 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void updateTaskOk() {
+    @DisplayName("позитивный тест обновления задачи с отправкой в кафку")
+    void updateTaskOkAndSendToKafka() {
         Task task = createTask();
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+        when(taskRepository.save(task)).thenReturn(task);
+
         assertDoesNotThrow(() -> taskService.update(task.getId(), task));
+        verify(kafkaProducer).sendTo(any(), any());
+    }
+
+    @Test
+    @DisplayName("позитивный тест обновления задачи без отправки в кафку, без смены состояния")
+    void updateTaskOkAndNotSendToKafka() {
+        Task task = createTask();
+        Task savedWitheStateNotUpdated = createTask();
+        savedWitheStateNotUpdated.setState("FAILED");
+        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+        when(taskRepository.save(task)).thenReturn(savedWitheStateNotUpdated);
+
+        assertDoesNotThrow(() -> taskService.update(task.getId(), task));
+        verify(kafkaProducer, never()).sendTo(any(), any());
     }
 
     @Test
@@ -65,6 +79,7 @@ class TaskServiceImplTest {
         Task task = createTask();
         when(taskRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(TaskNotFoundException.class, () -> taskService.update(anyLong(), task));
+        verify(kafkaProducer, never()).sendTo(any(), any());
     }
 
     @Test
@@ -89,4 +104,5 @@ class TaskServiceImplTest {
         task.setUserId(1L);
         return task;
     }
+  
 }

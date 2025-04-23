@@ -7,6 +7,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.home_work.t1_school.converter.MessageConverter;
+import ru.home_work.t1_school.exception.MessageSendException;
 import ru.home_work.t1_school.model.Message;
 import ru.home_work.t1_school.model.MessageDto;
 import ru.home_work.t1_school.service.NotificationService;
@@ -42,6 +43,7 @@ public class KafkaMessageConsumer {
             log.info("Message sent: {}", messageList.size());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw new MessageSendException(e.getMessage(), e);
         } finally {
             ack.acknowledge();
         }

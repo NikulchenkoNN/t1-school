@@ -39,7 +39,7 @@ public class NotificationService {
     @Value("${school.mail.smtp.ssl_enabled}")
     private String sslEnabled;
 
-    public void sendNotification(Long id) throws MailException {
+    public void sendNotification(Long id) throws MailException, MessageSendException {
         Properties properties = new Properties();
         properties.put("mail.smtp.host", smtpHost); // smtp сервер Google
         properties.put("mail.smtp.port", smtpPort);
@@ -63,7 +63,7 @@ public class NotificationService {
             log.info("Sent message successfully");
         } catch (MessagingException e) {
             log.error(e.getMessage());
-            throw new MessageSendException("Ошибка при попытке отпрвки email",e);
+            throw new MessageSendException("Ошибка при попытке отпрвки email", e);
         }
     }
 }
